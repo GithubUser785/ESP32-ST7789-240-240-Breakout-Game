@@ -66,33 +66,33 @@ float getRandomFloat(float min, float max) {
 
 //Start screen
 void showStartScreen() {
-  tft.fillScreen(TFT_BLACK); // Clear the screen
+  tft.fillScreen(TFT_BLACK);  // Clear the screen
   tft.setTextColor(TFT_WHITE);
   tft.setTextSize(2);
-  tft.setTextWrap(false); // Disable text wrapping
+  tft.setTextWrap(false);  // Disable text wrapping
 
   // Start the text at x = 0
-  int yOffset = 50; // Starting Y position for the first line
-  tft.setCursor(0, yOffset); // Set X to 0
+  int yOffset = 50;           // Starting Y position for the first line
+  tft.setCursor(0, yOffset);  // Set X to 0
   tft.print("ESP32 Breakout Game");
-  
-  yOffset += 30; // Move down for the next line
-  tft.setCursor(0, yOffset); // Set X to 0
+
+  yOffset += 30;              // Move down for the next line
+  tft.setCursor(0, yOffset);  // Set X to 0
   tft.print("By me (not you)!");
 
-  yOffset += 30; // Move down for the next line
-  tft.setCursor(0, yOffset); // Set X to 0
+  yOffset += 30;              // Move down for the next line
+  tft.setCursor(0, yOffset);  // Set X to 0
   tft.print("Push joystick button");
-  
-  yOffset += 30; // Move down for the last line
-  tft.setCursor(0, yOffset); // Set X to 0
+
+  yOffset += 30;              // Move down for the last line
+  tft.setCursor(0, yOffset);  // Set X to 0
   tft.print("to begin.");
 
   // Wait for joystick button press
   while (digitalRead(JOY_SW) == HIGH) {
-    delay(10); // Busy wait until joystick button is pressed
+    delay(10);  // Busy wait until joystick button is pressed
   }
-  
+
   // Clear screen after the button is pressed
   tft.fillScreen(TFT_BLACK);
 }
@@ -108,7 +108,7 @@ void setup() {
   pinMode(JOY_VRY, INPUT);
   pinMode(JOY_SW, INPUT_PULLUP);
   pinMode(BUZZER, OUTPUT);
-  
+
   // Show the start screen
   showStartScreen();
 
@@ -152,8 +152,12 @@ void loop() {
       runJoystick();
     }
 
+    if (currentTick % 5 == 0) {
+      drawBricks();
+    }
+
     // Regen text every 100 ticks (if not game over)
-    if (currentTick % 100 == 0 && !gameOver) {
+    if (currentTick % 50 == 0 && !gameOver) {
       updateScore();
     }
 
@@ -200,31 +204,29 @@ void runPhysics() {
   }
 
   // Ball collision with paddle
-  if (ballY + ballRadius >= paddleY && ballY + ballRadius <= paddleY + paddleHeight &&
-      ballX + ballRadius >= paddleX && ballX - ballRadius <= paddleX + paddleWidth) {
-    ballSpeedY *= -1;  // Reverse direction for paddle
+  if (ballY + ballRadius >= paddleY && ballY + ballRadius <= paddleY + paddleHeight && ballX + ballRadius >= paddleX && ballX - ballRadius <= paddleX + paddleWidth) {
+    ballSpeedY *= -1;              // Reverse direction for paddle
     ballY = paddleY - ballRadius;  // Prevent clipping
-    tone(BUZZER, 262, 100);  // Play sound when ball hits the paddle
+    tone(BUZZER, 262, 100);        // Play sound when ball hits the paddle
     Serial.println("Ball hit paddle");
   }
 
   // Ball collision with bricks
   for (int r = 0; r < numRows; r++) {
     for (int c = 0; c < numCols; c++) {
-      if (bricks[r][c] == 0) { // Only check unhit bricks
+      if (bricks[r][c] == 0) {  // Only check unhit bricks
         int brickX = c * (brickWidth + 5);
         int brickY = r * (brickHeight + 5);
-        if (ballX + ballRadius > brickX && ballX - ballRadius < brickX + brickWidth &&
-            ballY + ballRadius > brickY && ballY - ballRadius < brickY + brickHeight) {
-          
+        if (ballX + ballRadius > brickX && ballX - ballRadius < brickX + brickWidth && ballY + ballRadius > brickY && ballY - ballRadius < brickY + brickHeight) {
+
           // Reverse vertical speed on brick hit
           ballSpeedY *= -1;
 
-          bricks[r][c] = 1;  // Mark brick as hit
+          bricks[r][c] = 1;                                                  // Mark brick as hit
           tft.fillRect(brickX, brickY, brickWidth, brickHeight, TFT_BLACK);  // Remove the brick
-          tone(BUZZER, 262, 100);  // Play sound
-          score += 10;  // Update score
-          updateScore();  // Redraw score
+          tone(BUZZER, 262, 100);                                            // Play sound
+          score += 10;                                                       // Update score
+          updateScore();                                                     // Redraw score
           Serial.print("Brick hit at (");
           Serial.print(brickX);
           Serial.print(", ");
@@ -243,7 +245,7 @@ void runPhysics() {
   }
 
   // Clear the previous ball position
-  tft.fillCircle(lastBallX, lastBallY, ballRadius+3, TFT_BLACK);
+  tft.fillCircle(lastBallX, lastBallY, ballRadius + 3, TFT_BLACK);
   // Clear the previous paddle position
   clearPaddle(lastPaddleX, paddleY, paddleWidth);
   // Draw the new paddle position
@@ -351,16 +353,17 @@ void resetGame(bool winStatus) {
 
 
 void updateScore() {
-  tft.fillRect(0, 0, screenWidth, 20, TFT_BLACK);  // Clear previous score display
-  tft.setCursor(0, 0);
+  tft.fillRect(0, paddleY -15, screenWidth, 20, TFT_BLACK);  // Clear previous score display
+  tft.setCursor(0, paddleY - 15);                  // Set cursor to 10 pixels above the paddle
   tft.setTextSize(1);
   tft.setTextColor(TFT_WHITE);
   tft.print("Score: ");
   tft.print(score);
-  tft.setCursor(screenWidth - 60, 0);
+  tft.setCursor(screenWidth - 60, paddleY - 15);  // Adjust level text position
   tft.print("Level: ");
   tft.print(level);
 }
+
 
 void resetBricks() {
   for (int r = 0; r < numRows; r++) {
@@ -383,6 +386,8 @@ void drawBricks() {
   }
   Serial.println("Bricks drawn.");
 }
+
+
 
 void activatePowerUp() {
   powerUpActive = true;
