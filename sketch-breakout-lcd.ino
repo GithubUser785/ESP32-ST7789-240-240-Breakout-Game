@@ -6,11 +6,11 @@ glhf :)
 -17/9/2024
 -18/9/2024
 -19/9/2024
+-20/9/2024
 */
 
 #include <TFT_eSPI.h>  // Graphics and font library for ST7789 driver chip
 #include <SPI.h>
-
 // ST7789 screen width and height
 #define TFT_WIDTH 240
 #define TFT_HEIGHT 240
@@ -64,6 +64,40 @@ float getRandomFloat(float min, float max) {
 }
 
 
+//Start screen
+void showStartScreen() {
+  tft.fillScreen(TFT_BLACK); // Clear the screen
+  tft.setTextColor(TFT_WHITE);
+  tft.setTextSize(2);
+  
+  // Center the text
+  int yOffset = 50; // Starting Y position for the first line
+  tft.setCursor((screenWidth - 160) / 2, yOffset); // Centering the first line
+  tft.print("ESP32 Breakout Game");
+  
+  yOffset += 30; // Move down for the next line
+  tft.setCursor((screenWidth - 60) / 2, yOffset);
+  tft.print("By me (not you)"); 
+
+
+  yOffset += 30; // Move down for the next line
+  tft.setCursor((screenWidth - 160) / 2, yOffset);
+  tft.print("Press joystick button");
+  
+  yOffset += 30; // Move down for the last line
+  tft.setCursor((screenWidth - 100) / 2, yOffset);
+  tft.print("to begin.");
+
+  // Wait for joystick button press
+  while (digitalRead(JOY_SW) == HIGH) {
+    delay(10); // Busy wait until joystick button is pressed
+  }
+  
+  // Clear screen after the button is pressed
+  tft.fillScreen(TFT_BLACK);
+}
+
+
 void setup() {
   Serial.begin(115200);
   tft.init();
@@ -75,6 +109,9 @@ void setup() {
   pinMode(JOY_VRY, INPUT);
   pinMode(JOY_SW, INPUT_PULLUP);
   pinMode(BUZZER, OUTPUT);
+  
+  // Show the start screen
+  showStartScreen();
 
   // Initialize paddle and ball positions
   paddleX = screenWidth / 2 - paddleWidth / 2;
@@ -88,8 +125,8 @@ void setup() {
   ballX = screenWidth / 2 + randomX;
   ballY = screenHeight / 2 + randomY;
 
-  ballSpeedX *= getRandomFloat(0.95, 1.15);
-  ballSpeedY *= getRandomFloat(0.95, 1.15);
+  ballSpeedX *= getRandomFloat(1.01, 1.15);
+  ballSpeedY *= getRandomFloat(1.01, 1.15);
   resetBricks();  // Initialize brick positions
   lastPaddleX = paddleX;
   lastBallX = ballX;
