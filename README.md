@@ -22,7 +22,7 @@ A breakout-style game for Arduino using an ST7789 display, featuring joystick co
 ### Installation
 1. Install the [TFT_eSPI library](https://github.com/Bodmer/TFT_eSPI) via the Arduino Library Manager.
 2. Configure the `User_Setup.h` file in the TFT_eSPI library to match your hardware setup.
-3. Connect the hardware as described in the setup guide.
+3. Connect the hardware as described in the setup guide. Here, you can use any pins for SPI but hardware SPI pins are recommended.
 
 ## Usage
 1. Upload the code to your Arduino board using the Arduino IDE.
