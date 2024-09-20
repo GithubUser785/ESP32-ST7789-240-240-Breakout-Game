@@ -321,7 +321,7 @@ void resetGame(bool winStatus) {
 
   Serial.print("Resetting game. Level: ");
   Serial.println(level);
-
+  score=0; //Reset score regardless of win or loss
   // Reset paddle and ball positions
   paddleX = screenWidth / 2 - paddleWidth / 2;
   paddleY = screenHeight - 20;
