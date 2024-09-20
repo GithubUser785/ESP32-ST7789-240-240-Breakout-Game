@@ -69,23 +69,23 @@ void showStartScreen() {
   tft.fillScreen(TFT_BLACK); // Clear the screen
   tft.setTextColor(TFT_WHITE);
   tft.setTextSize(2);
-  
-  // Center the text
+  tft.setTextWrap(false); // Disable text wrapping
+
+  // Start the text at x = 0
   int yOffset = 50; // Starting Y position for the first line
-  tft.setCursor((screenWidth - 160) / 2, yOffset); // Centering the first line
+  tft.setCursor(0, yOffset); // Set X to 0
   tft.print("ESP32 Breakout Game");
   
   yOffset += 30; // Move down for the next line
-  tft.setCursor((screenWidth - 60) / 2, yOffset);
-  tft.print("By me (not you)"); 
-
+  tft.setCursor(0, yOffset); // Set X to 0
+  tft.print("By me (not you)!");
 
   yOffset += 30; // Move down for the next line
-  tft.setCursor((screenWidth - 160) / 2, yOffset);
-  tft.print("Press joystick button");
+  tft.setCursor(0, yOffset); // Set X to 0
+  tft.print("Push joystick button");
   
   yOffset += 30; // Move down for the last line
-  tft.setCursor((screenWidth - 100) / 2, yOffset);
+  tft.setCursor(0, yOffset); // Set X to 0
   tft.print("to begin.");
 
   // Wait for joystick button press
@@ -96,7 +96,6 @@ void showStartScreen() {
   // Clear screen after the button is pressed
   tft.fillScreen(TFT_BLACK);
 }
-
 
 void setup() {
   Serial.begin(115200);
