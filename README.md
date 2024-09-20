@@ -38,6 +38,12 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Contributing
 Feel free to open issues or submit pull requests if you have suggestions or improvements.
 
+## To Add
+Background
+Sprites
+Start Screen
+Scoring on Internet (maybe)
+
 ## Acknowledgements
 - TFT_eSPI library by Bodmer
 - Joystick module and buzzer components
