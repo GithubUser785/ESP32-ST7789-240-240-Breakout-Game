@@ -188,61 +188,53 @@ void runPhysics() {
 
   // Ball collision with walls
   if (ballX - ballRadius <= 0 || ballX + ballRadius >= screenWidth) {
-    ballSpeedX *= -1;  // Reverse direction
+    ballSpeedX *= -1;  // Reverse horizontal direction
     ballX = constrain(ballX, ballRadius, screenWidth - ballRadius);
     Serial.println("Ball hit horizontal wall");
   }
 
   if (ballY - ballRadius <= 0) {
-    ballSpeedY *= -1;  // Reverse direction
+    ballSpeedY *= -1;  // Reverse direction for top wall
     ballY = ballRadius;
     Serial.println("Ball hit top wall");
   }
 
   // Ball collision with paddle
-  if (ballY + ballRadius >= paddleY && ballY + ballRadius <= paddleY + paddleHeight && ballX + ballRadius >= paddleX && ballX - ballRadius <= paddleX + paddleWidth) {
-    ballSpeedY *= -1;              // Reverse direction
+  if (ballY + ballRadius >= paddleY && ballY + ballRadius <= paddleY + paddleHeight &&
+      ballX + ballRadius >= paddleX && ballX - ballRadius <= paddleX + paddleWidth) {
+    ballSpeedY *= -1;  // Reverse direction for paddle
     ballY = paddleY - ballRadius;  // Prevent clipping
-    tone(BUZZER, 262, 100);        // Play sound when ball hits the paddle
+    tone(BUZZER, 262, 100);  // Play sound when ball hits the paddle
     Serial.println("Ball hit paddle");
   }
 
   // Ball collision with bricks
   for (int r = 0; r < numRows; r++) {
     for (int c = 0; c < numCols; c++) {
-      if (bricks[r][c] == 0) {
+      if (bricks[r][c] == 0) { // Only check unhit bricks
         int brickX = c * (brickWidth + 5);
         int brickY = r * (brickHeight + 5);
-        if (ballX + ballRadius > brickX && ballX - ballRadius < brickX + brickWidth && ballY + ballRadius > brickY && ballY - ballRadius < brickY + brickHeight) {
-          ballSpeedY *= -1;                                                  // Reverse direction
-          bricks[r][c] = 1;                                                  // Mark brick as hit
+        if (ballX + ballRadius > brickX && ballX - ballRadius < brickX + brickWidth &&
+            ballY + ballRadius > brickY && ballY - ballRadius < brickY + brickHeight) {
+          
+          // Reverse vertical speed on brick hit
+          ballSpeedY *= -1;
+
+          bricks[r][c] = 1;  // Mark brick as hit
           tft.fillRect(brickX, brickY, brickWidth, brickHeight, TFT_BLACK);  // Remove the brick
-          tone(BUZZER, 262, 100);                                            // Play sound when ball hits the brick
-          score += 10;                                                       // Update score
-          updateScore();                                                     // Redraw score
+          tone(BUZZER, 262, 100);  // Play sound
+          score += 10;  // Update score
+          updateScore();  // Redraw score
           Serial.print("Brick hit at (");
           Serial.print(brickX);
           Serial.print(", ");
           Serial.print(brickY);
           Serial.println(")");
+
+          return;  // Exit after first hit
         }
       }
     }
-  }
-
-  // Check for level completion
-  bool levelComplete = true;
-  for (int r = 0; r < numRows; r++) {
-    for (int c = 0; c < numCols; c++) {
-      if (bricks[r][c] == 0) {
-        levelComplete = false;
-        break;
-      }
-    }
-    if (!levelComplete) break;
-  }
-  if (levelComplete) {
-    endLevel(true);  // Pass true for win
   }
 
   // Game over if the ball goes off the screen
@@ -251,7 +243,7 @@ void runPhysics() {
   }
 
   // Clear the previous ball position
-  tft.fillCircle(lastBallX, lastBallY, ballRadius, TFT_BLACK);
+  tft.fillCircle(lastBallX, lastBallY, ballRadius+3, TFT_BLACK);
   // Clear the previous paddle position
   clearPaddle(lastPaddleX, paddleY, paddleWidth);
   // Draw the new paddle position
@@ -261,6 +253,9 @@ void runPhysics() {
 
   lastPaddleX = paddleX;  // Update last paddle position
 }
+
+
+
 
 void runJoystick() {
   // Read joystick input and map to screen width
@@ -321,7 +316,7 @@ void resetGame(bool winStatus) {
 
   Serial.print("Resetting game. Level: ");
   Serial.println(level);
-  score=0; //Reset score regardless of win or loss
+  score = 0;
   // Reset paddle and ball positions
   paddleX = screenWidth / 2 - paddleWidth / 2;
   paddleY = screenHeight - 20;
