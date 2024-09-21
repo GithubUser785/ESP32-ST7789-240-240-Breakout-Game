@@ -157,7 +157,7 @@ void loop() {
       drawBricks();
     }
 
-    // Regen text every 100 ticks (if not game over)
+    // Regen text every 25 ticks (if not game over)
     if (currentTick % 25 == 0 && !gameOver) {
       updateScore();
     }
