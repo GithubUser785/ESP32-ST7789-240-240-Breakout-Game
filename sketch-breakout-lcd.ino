@@ -7,6 +7,7 @@ glhf :)
 -18/9/2024
 -19/9/2024
 -20/9/2024
+-21/9/2024
 */
 
 #include <TFT_eSPI.h>  // Graphics and font library for ST7789 driver chip
@@ -157,7 +158,7 @@ void loop() {
     }
 
     // Regen text every 100 ticks (if not game over)
-    if (currentTick % 50 == 0 && !gameOver) {
+    if (currentTick % 25 == 0 && !gameOver) {
       updateScore();
     }
 
@@ -170,7 +171,7 @@ void loop() {
       deactivatePowerUp();
     }
 
-    delay(50);  // Control the speed of the game
+    delay(40);  // Control the speed of the game
   } else {
     // Display end screen
     delay(5000);  // 5 seconds delay before restarting
@@ -218,9 +219,11 @@ void runPhysics() {
         int brickX = c * (brickWidth + 5);
         int brickY = r * (brickHeight + 5);
         if (ballX + ballRadius > brickX && ballX - ballRadius < brickX + brickWidth && ballY + ballRadius > brickY && ballY - ballRadius < brickY + brickHeight) {
-
-          // Reverse vertical speed on brick hit
-          ballSpeedY *= -1;
+          
+          // Check if ball is moving upwards before reversing vertical speed
+          if (ballSpeedY < 0) {
+            ballSpeedY *= -1;
+          }
 
           bricks[r][c] = 1;                                                  // Mark brick as hit
           tft.fillRect(brickX, brickY, brickWidth, brickHeight, TFT_BLACK);  // Remove the brick
@@ -255,6 +258,7 @@ void runPhysics() {
 
   lastPaddleX = paddleX;  // Update last paddle position
 }
+
 
 
 
